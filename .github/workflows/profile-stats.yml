@@ -1,0 +1,251 @@
+name: Generate profile stats
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch:        # manual trigger
+  push:
+    paths:
+      - ".github/workflows/profile-stats.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout profile repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install system dependencies for canvas
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcairo2-dev \
+            libpango1.0-dev \
+            libjpeg-dev \
+            libgif-dev \
+            librsvg2-dev
+
+      - name: Install Node dependencies
+        run: |
+          if [ ! -f package.json ]; then
+            npm init -y
+          fi
+          npm install @octokit/core @octokit/plugin-paginate-rest canvas
+
+      - name: Generate stats images
+        env:
+          GH_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
+          GH_USERNAME: ${{ github.repository_owner }}
+        run: |
+          node << 'EOF'
+          const { Octokit } = require("@octokit/core");
+          const { paginateRest } = require("@octokit/plugin-paginate-rest");
+          const { createCanvas } = require("canvas");
+          const fs = require("fs");
+          const path = require("path");
+
+          const MyOctokit = Octokit.plugin(paginateRest);
+          const octokit = new MyOctokit({ auth: process.env.GH_TOKEN });
+          const username = process.env.GH_USERNAME;
+
+          async function fetchRepos() {
+            const repos = await octokit.paginate("GET /user/repos", {
+              visibility: "all",
+              per_page: 100,
+              affiliation: "owner"
+            });
+            return repos.filter(r => !r.archived);
+          }
+
+          async function fetchStats() {
+            const repos = await fetchRepos();
+
+            let totalStars = 0;
+            let totalForks = 0;
+            let totalSizeKB = 0;
+            const languages = {};
+
+            for (const repo of repos) {
+              totalStars += repo.stargazers_count;
+              totalForks += repo.forks_count;
+              totalSizeKB += repo.size;
+
+              if (repo.language) {
+                languages[repo.language] = (languages[repo.language] || 0) + repo.size;
+              }
+            }
+
+            const pulls = await octokit.paginate("GET /search/issues", {
+              q: `type:pr author:${username}`,
+              per_page: 100
+            });
+
+            const issues = await octokit.paginate("GET /search/issues", {
+              q: `type:issue author:${username}`,
+              per_page: 100
+            });
+
+            return {
+              reposCount: repos.length,
+              totalStars,
+              totalForks,
+              totalSizeMB: (totalSizeKB / 1024).toFixed(1),
+              totalPRs: pulls.length,
+              totalIssues: issues.length,
+              languages
+            };
+          }
+
+          function ensureDir(p) {
+            if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
+          }
+
+          function drawStatsCard(stats) {
+            const width = 800;
+            const height = 260;
+            const canvas = createCanvas(width, height);
+            const ctx = canvas.getContext("2d");
+
+            // background
+            ctx.fillStyle = "#0f172a";
+            ctx.fillRect(0, 0, width, height);
+
+            // title
+            ctx.fillStyle = "#e5e7eb";
+            ctx.font = "bold 26px Sans";
+            ctx.fillText(`@${username} – GitHub Stats`, 30, 50);
+
+            ctx.font = "16px Sans";
+            ctx.fillStyle = "#9ca3af";
+            ctx.fillText("Includes private repositories", 30, 78);
+
+            const metrics = [
+              ["Repos", stats.reposCount],
+              ["Stars", stats.totalStars],
+              ["Forks", stats.totalForks],
+              ["Total size (MB)", stats.totalSizeMB],
+              ["PRs opened", stats.totalPRs],
+              ["Issues opened", stats.totalIssues]
+            ];
+
+            let y = 120;
+            const xLabel = 40;
+            const xValue = 230;
+
+            ctx.font = "18px Sans";
+            for (const [label, value] of metrics) {
+              ctx.fillStyle = "#9ca3af";
+              ctx.fillText(label, xLabel, y);
+              ctx.fillStyle = "#e5e7eb";
+              ctx.fillText(String(value), xValue, y);
+              y += 30;
+            }
+
+            return canvas.toBuffer("image/png");
+          }
+
+          function drawLanguageBars(stats) {
+            const width = 800;
+            const height = 260;
+            const canvas = createCanvas(width, height);
+            const ctx = canvas.getContext("2d");
+
+            ctx.fillStyle = "#0f172a";
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.fillStyle = "#e5e7eb";
+            ctx.font = "bold 24px Sans";
+            ctx.fillText(
+              "Languages (by repo size – includes private)",
+              30,
+              50
+            );
+
+            const entries = Object.entries(stats.languages)
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 8);
+
+            if (entries.length === 0) {
+              ctx.font = "18px Sans";
+              ctx.fillText("No language data available", 30, 120);
+              return canvas.toBuffer("image/png");
+            }
+
+            const total = entries.reduce((sum, [, size]) => sum + size, 0);
+
+            const area = {
+              x: 40,
+              y: 80,
+              width: width - 80,
+              rowHeight: 20,
+              rowGap: 8
+            };
+
+            entries.forEach(([lang, size], idx) => {
+              const y = area.y + idx * (area.rowHeight + area.rowGap);
+              const ratio = size / total;
+              const barW = Math.max(40, area.width * ratio);
+
+              // bar
+              ctx.fillStyle = "#1d4ed8";
+              ctx.fillRect(area.x, y, barW, area.rowHeight);
+
+              // label
+              ctx.fillStyle = "#e5e7eb";
+              ctx.font = "14px Sans";
+              ctx.fillText(
+                `${lang} ${(ratio * 100).toFixed(1)}%`,
+                area.x + 8,
+                y + area.rowHeight - 4
+              );
+            });
+
+            return canvas.toBuffer("image/png");
+          }
+
+          (async () => {
+            const stats = await fetchStats();
+
+            ensureDir("generated");
+
+            fs.writeFileSync(
+              path.join("generated", "github-stats.png"),
+              drawStatsCard(stats)
+            );
+            fs.writeFileSync(
+              path.join("generated", "languages.png"),
+              drawLanguageBars(stats)
+            );
+
+            console.log("Generated stats images.");
+          })().catch(err => {
+            console.error(err);
+            process.exit(1);
+          });
+          EOF
+
+      - name: Commit and push generated images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          mkdir -p assets
+          cp generated/github-stats.png assets/github-stats.png
+          cp generated/languages.png assets/languages.png
+
+          if [[ -n "$(git status --porcelain assets)" ]]; then
+            git add assets/github-stats.png assets/languages.png
+            git commit -m "chore: update profile stats [skip ci]"
+            git push
+          else
+            echo "No changes to commit."
+          fi
