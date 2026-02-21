@@ -1,104 +1,69 @@
 
-# < JorgeCura />
+# Jorge Cura
+
+**Senior Backend & Distributed Systems Engineer**
 
 ```csharp
 public class Engineer : IPolyglot, IArchitect
 {
-    public string Name => "Jorge Cura";
-    public string Philosophy => "Language Agnostic (The right tool for the job)";
-    public string Obsession => "Deterministic Systems & Context Engineering";
-    public bool IsCoffeeDependent => true;
+    public string Name       => "Jorge Cura";
+    public string Philosophy => "Language Agnostic — the right tool for the job";
+    public string Focus      => "Deterministic Systems & Context Engineering";
 }
 ```
 
-### `> whoami`
+---
 
-I am a Senior Backend & Distributed Systems Engineer with 7+ years of experience building high-availability payment processors and developer tooling. 
+## About
 
-I am **language agnostic** by design. While I have deep roots in the .NET ecosystem, I believe syntax is secondary to architecture. Whether it's **Rust** for local-first performance, **Python** for data pipelines, or **C#** for enterprise stability, I focus on building **idempotent, fault-tolerant systems** regardless of the stack.
-
-When I'm not managing memory safety or optimizing SQL queries, I am obsessing over the physics of extraction—applying engineering rigor to **AI Agents** and **Specialty Coffee**.
+7+ years building high-availability payment processors, developer tooling, and distributed systems. Language agnostic by design — deep roots in .NET, but I pick the right runtime for the problem: **Rust** for local-first performance, **Python** for data pipelines, **C#** for enterprise stability. Everything I ship is **idempotent, fault-tolerant, and observable**.
 
 ---
 
-## `0x01` // The Current Toolbelt
+## Experience
 
-| Context | Technology |
+**Senior Software Engineer** | **InComm Payments** | *<!-- dates, e.g. 2022 – Present -->*
+- Designed custom idempotency layers for payment orchestration, preventing double-charges across network retries
+- Led zero-downtime migration from legacy monolith to modular Vue 3 micro-frontends
+- Built and maintained high-throughput transaction processing services on .NET
+
+**Software Engineer** | **RT²** | *<!-- dates, e.g. 2019 – 2022 -->*
+- Developed payment rails handling millions in monthly transaction volume
+- Implemented event-sourced architectures with distributed locking (RedLock) for consistency guarantees
+- Drove adoption of CI/CD pipelines and containerized deployments (Docker, GitHub Actions)
+
+<!-- Add earlier roles here -->
+
+---
+
+## Technical Skills
+
+| Domain | Stack |
 | :--- | :--- |
-| **Core Backend** | C# (.NET), Python |
-| **Systems** | Rust (Tauri v2), Distributed Locking (RedLock), Event Sourcing |
-| **Frontend** | Vue.js 3 (Composition API), TypeScript, Pinia, Tailwind |
+| **Backend** | C# (.NET), Python, Rust |
+| **Systems** | Distributed Locking (RedLock), Event Sourcing, Idempotency Patterns |
+| **Frontend** | Vue.js 3 (Composition API), TypeScript, Pinia, Tailwind CSS |
 | **Data** | SQL Server, PostgreSQL, Redis, MongoDB |
-| **Infra** | Azure, AWS (ECS), Docker, GitHub Actions |
+| **Infrastructure** | Azure, AWS (ECS), Docker, GitHub Actions |
 
 ---
 
-## `0x02` // Build Artifacts
+## Featured Projects
 
-### ⚡ **[Project Desk App]** (Local-First Tooling)
-*Bridging the gap between local filesystems and LLM reasoning.*
-*   **The Tech:** Rust (Backend), Tauri, Vue 3, Tiktoken-rs.
-*   **The Engineering:** Implemented a recursive filesystem traversal in Rust (10x faster than Node) and a deterministic JSON-to-File patcher to allow LLMs to safely refactor code with human-in-the-loop gates.
+### Project Desk App — Local-First Tooling
+*Bridging local filesystems and LLM reasoning.*
+- **Stack:** Rust (backend), Tauri v2, Vue 3, Tiktoken-rs
+- Recursive filesystem traversal in Rust — 10x throughput vs. Node
+- Deterministic JSON-to-File patcher enabling LLM-assisted code refactoring with human-in-the-loop gates
 
-### 💳 **Enterprise Payment Orchestration**
-*Building rails for millions in transactions at RT² & InComm.*
-*   **Resilience:** Designed custom idempotency layers to ensure network retries never result in double-charges.
-*   **Migration:** Led zero-downtime migrations from legacy monoliths to modular Vue 3 micro-frontends.
-
----
-
-## `0x03` // System.Runtime.Caffeine ☕
-
-I treat coffee brewing like a deployment pipeline: it requires precise variables, consistent execution, and constant debugging. I follow the **James Hoffmann** school of thought—maximizing extraction without hitting astringency.
-
-Here are my current production configurations:
-
-### 🚀 The "Daily Driver" (Aeropress)
-*Source: James Hoffmann's Ultimate Aeropress Technique*
-
-```yaml
-config:
-  method: Inverted? No. Standard.
-  ratio: 11g : 200g (Light Roast)
-  grind_size: Medium-Fine (Salt)
-  temp: 100°C (Boiling)
-
-execution:
-  - step: "0:00"
-    action: "Pour 200g water"
-    notes: "Ensure all grounds are wet."
-  - step: "0:00 - 2:00"
-    action: "Wait"
-    notes: "Let thermal energy do the work."
-  - step: "2:00"
-    action: "Swirl"
-    notes: "Gently breaking the crust. Do not plunge yet."
-  - step: "2:30"
-    action: "Press"
-    notes: "Press gently. Stop at the hiss."
-```
-
-### 🧪 The "Weekend Release" (V60)
-*Source: James Hoffmann's "Better 1 Cup V60"*
-
-```json
-{
-  "profile": "V60_02",
-  "dose": "15g",
-  "water_total": "250g",
-  "temp": "100°C",
-  "phases": [
-    { "time": "0:00", "action": "Bloom", "mass": "50g", "desc": "Swirl to wet all grounds" },
-    { "time": "0:45", "action": "Pour",  "mass": "to 250g", "desc": "Pour center, slow circles. Aim for 60% of total." },
-    { "time": "1:15", "action": "Swirl", "mass": "N/A", "desc": "Gently swirl brewer to flatten bed." },
-    { "time": "2:30", "action": "Drawdown", "status": "Complete" }
-  ]
-}
-```
+### Enterprise Payment Orchestration — InComm / RT²
+*Infrastructure for millions in transactions.*
+- Custom idempotency layers ensuring exactly-once semantics across retries
+- Zero-downtime monolith-to-micro-frontend migration (Vue 3)
 
 ---
 
-## `0x04` // Telemetry
+## GitHub Activity
 
 <p align="center">
   <img src="assets/github-stats.png" alt="GitHub Stats" width="495" />
@@ -106,11 +71,22 @@ execution:
   <img src="assets/languages.png" alt="Top Languages" width="495" />
 </p>
 
+<details>
+<summary><strong>Bonus: System.Runtime.Caffeine</strong></summary>
+<br />
+
+I treat coffee brewing like a deployment pipeline — precise variables, consistent execution, constant debugging. Following the James Hoffmann school of thought.
+
+| Method | Dose | Water | Grind | Key Step |
+| :--- | :--- | :--- | :--- | :--- |
+| **Aeropress** | 11 g | 200 g @ 100 °C | Medium-Fine | Steep 2 min, swirl, gentle press |
+| **V60** | 15 g | 250 g @ 100 °C | Medium | 50 g bloom, single pour to 250 g, swirl |
+
+</details>
+
 ---
 
-## `0x05` // Connect
+## Connect
 
-If you want to talk about distributed systems, why Rust is the future of desktop apps, or why your espresso tastes sour, hit me up.
-
-*   [LinkedIn](https://linkedin.com/in/jorgecura)
-*   [Email](mailto:curajorge21@gmail.com)
+- [LinkedIn](https://linkedin.com/in/jorgecura)
+- [Email](mailto:curajorge21@gmail.com)
