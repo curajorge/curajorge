@@ -98,7 +98,17 @@ execution:
 
 ---
 
-## `0x04` // Connect
+## `0x04` // Telemetry
+
+<p align="center">
+  <img src="assets/github-stats.png" alt="GitHub Stats" width="495" />
+  <br />
+  <img src="assets/languages.png" alt="Top Languages" width="495" />
+</p>
+
+---
+
+## `0x05` // Connect
 
 If you want to talk about distributed systems, why Rust is the future of desktop apps, or why your espresso tastes sour, hit me up.
 
