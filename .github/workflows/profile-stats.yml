@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   stats:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout profile repo
@@ -37,14 +37,16 @@ jobs:
             libjpeg-dev \
             libgif-dev \
             librsvg2-dev \
-            libpixman-1-dev
+            libpixman-1-dev \
+            fonts-dejavu-core
+          fc-cache -fv
 
       - name: Install Node dependencies
         run: |
           if [ ! -f package.json ]; then
             npm init -y
           fi
-          npm install @octokit/core @octokit/plugin-paginate-rest canvas
+          npm install @octokit/core @octokit/plugin-paginate-rest canvas@^2.11.2
 
       - name: Generate stats images
         env:
