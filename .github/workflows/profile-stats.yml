@@ -5,6 +5,7 @@ on:
     - cron: "0 */6 * * *"   # every 6 hours
   workflow_dispatch:        # manual trigger
   push:
+    branches: [main]
     paths:
       - ".github/workflows/profile-stats.yml"
 
@@ -18,6 +19,8 @@ jobs:
     steps:
       - name: Checkout profile repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_STATS_TOKEN }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -28,11 +31,13 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
+            build-essential \
             libcairo2-dev \
             libpango1.0-dev \
             libjpeg-dev \
             libgif-dev \
-            librsvg2-dev
+            librsvg2-dev \
+            libpixman-1-dev
 
       - name: Install Node dependencies
         run: |
@@ -84,14 +89,18 @@ jobs:
               }
             }
 
-            const pulls = await octokit.paginate("GET /search/issues", {
+            // Use single search requests instead of paginate for the Search API.
+            // The Search API returns { total_count, items } — paginate concatenates
+            // the items arrays, but total_count is more reliable and avoids
+            // rate-limit issues (Search API: 30 req/min).
+            const prResult = await octokit.request("GET /search/issues", {
               q: `type:pr author:${username}`,
-              per_page: 100
+              per_page: 1
             });
 
-            const issues = await octokit.paginate("GET /search/issues", {
+            const issueResult = await octokit.request("GET /search/issues", {
               q: `type:issue author:${username}`,
-              per_page: 100
+              per_page: 1
             });
 
             return {
@@ -99,8 +108,8 @@ jobs:
               totalStars,
               totalForks,
               totalSizeMB: (totalSizeKB / 1024).toFixed(1),
-              totalPRs: pulls.length,
-              totalIssues: issues.length,
+              totalPRs: prResult.data.total_count,
+              totalIssues: issueResult.data.total_count,
               languages
             };
           }
@@ -111,7 +120,7 @@ jobs:
 
           function drawStatsCard(stats) {
             const width = 800;
-            const height = 260;
+            const height = 300;
             const canvas = createCanvas(width, height);
             const ctx = canvas.getContext("2d");
 
@@ -121,10 +130,10 @@ jobs:
 
             // title
             ctx.fillStyle = "#e5e7eb";
-            ctx.font = "bold 26px Sans";
+            ctx.font = "bold 26px DejaVu Sans, Sans";
             ctx.fillText(`@${username} – GitHub Stats`, 30, 50);
 
-            ctx.font = "16px Sans";
+            ctx.font = "16px DejaVu Sans, Sans";
             ctx.fillStyle = "#9ca3af";
             ctx.fillText("Includes private repositories", 30, 78);
 
@@ -141,7 +150,7 @@ jobs:
             const xLabel = 40;
             const xValue = 230;
 
-            ctx.font = "18px Sans";
+            ctx.font = "18px DejaVu Sans, Sans";
             for (const [label, value] of metrics) {
               ctx.fillStyle = "#9ca3af";
               ctx.fillText(label, xLabel, y);
@@ -155,7 +164,7 @@ jobs:
 
           function drawLanguageBars(stats) {
             const width = 800;
-            const height = 260;
+            const height = 300;
             const canvas = createCanvas(width, height);
             const ctx = canvas.getContext("2d");
 
@@ -163,7 +172,7 @@ jobs:
             ctx.fillRect(0, 0, width, height);
 
             ctx.fillStyle = "#e5e7eb";
-            ctx.font = "bold 24px Sans";
+            ctx.font = "bold 24px DejaVu Sans, Sans";
             ctx.fillText(
               "Languages (by repo size – includes private)",
               30,
@@ -175,7 +184,7 @@ jobs:
               .slice(0, 8);
 
             if (entries.length === 0) {
-              ctx.font = "18px Sans";
+              ctx.font = "18px DejaVu Sans, Sans";
               ctx.fillText("No language data available", 30, 120);
               return canvas.toBuffer("image/png");
             }
@@ -201,7 +210,7 @@ jobs:
 
               // label
               ctx.fillStyle = "#e5e7eb";
-              ctx.font = "14px Sans";
+              ctx.font = "14px DejaVu Sans, Sans";
               ctx.fillText(
                 `${lang} ${(ratio * 100).toFixed(1)}%`,
                 area.x + 8,
