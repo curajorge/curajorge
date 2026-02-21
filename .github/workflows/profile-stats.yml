@@ -92,7 +92,7 @@ jobs:
               totalSizeKB += repo.size;
 
               if (repo.language) {
-                languages[repo.language] = (languages[repo.language] || 0) + repo.size;
+                languages[repo.language] = (languages[repo.language] || 0) + 1;
               }
             }
 
@@ -181,7 +181,7 @@ jobs:
             ctx.fillStyle = "#e5e7eb";
             ctx.font = "bold 24px DejaVu Sans, Sans";
             ctx.fillText(
-              "Languages (by repo size – includes private)",
+              "Languages (by repo count \u2013 includes private)",
               30,
               50
             );
@@ -244,7 +244,9 @@ jobs:
 
             console.log("Generated stats images.");
           })().catch(err => {
-            console.error(err);
+            // Only log the message — the full error object can contain
+            // private repo names, request URLs, and auth headers.
+            console.error("Pipeline failed:", err.message || "Unknown error");
             process.exit(1);
           });
           EOF
