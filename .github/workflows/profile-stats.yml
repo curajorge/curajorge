@@ -17,10 +17,17 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+      - name: Validate GH_STATS_TOKEN
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::GH_STATS_TOKEN secret is not set. Configure it in repo Settings > Secrets & Variables > Actions with a PAT that has the 'repo' scope."
+            exit 1
+          fi
+        env:
+          TOKEN: ${{ secrets.GH_STATS_TOKEN }}
+
       - name: Checkout profile repo
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_STATS_TOKEN }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -244,17 +251,35 @@ jobs:
 
             console.log("Generated stats images.");
           })().catch(err => {
-            // Only log the message — the full error object can contain
-            // private repo names, request URLs, and auth headers.
+            // Log safe fields only — err.request and err.response.url can
+            // contain private repo names, request URLs, and auth headers.
             console.error("Pipeline failed:", err.message || "Unknown error");
+            if (err.name) console.error("  Error type:", err.name);
+            if (err.status) console.error("  HTTP status:", err.status);
+            const apiMsg = err.response?.data?.message;
+            if (apiMsg && apiMsg !== err.message) {
+              console.error("  API message:", apiMsg);
+            }
+            const remaining = err.response?.headers?.["x-ratelimit-remaining"];
+            const reset = err.response?.headers?.["x-ratelimit-reset"];
+            if (remaining !== undefined || reset !== undefined) {
+              console.error("  Rate limit remaining:", remaining ?? "unknown");
+              console.error("  Rate limit resets at:",
+                reset ? new Date(reset * 1000).toISOString() : "unknown");
+            }
             process.exit(1);
           });
           EOF
 
       - name: Commit and push generated images
+        env:
+          GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Use the PAT for push (checkout used the default GITHUB_TOKEN for read-only clone)
+          git remote set-url origin "https://x-access-token:${GH_STATS_TOKEN}@github.com/${{ github.repository }}.git"
 
           mkdir -p assets
           cp generated/github-stats.png assets/github-stats.png
