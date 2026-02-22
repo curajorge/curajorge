@@ -91,14 +91,6 @@ steps: [Pour 200g, Wait 2:00, Swirl, Press at 2:30 — stop at the hiss]
 
 ## `0x04` // Telemetry
 
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=curajorge&show_icons=true&theme=tokyonight&hide_border=true" alt="GitHub Stats" width="495" />
-  <br />
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=curajorge&theme=tokyonight&hide_border=true" alt="GitHub Streak" width="495" />
-  <br />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=curajorge&layout=compact&theme=tokyonight&hide_border=true" alt="Top Languages" width="495" />
-</p>
-
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/curajorge/curajorge/output/github-snake-dark.svg" />
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/curajorge/curajorge/output/github-snake.svg" />
