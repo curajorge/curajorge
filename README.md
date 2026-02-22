@@ -1,4 +1,10 @@
 
+<p align="center">
+  <a href="https://git.io/typing-svg">
+    <img src="https://readme-typing-svg.demolab.com/?lines=Language+Agnostic+%7C+The+Right+Tool+for+the+Job;Distributed+Systems+%26+Agent+Orchestration;Deterministic+Systems+%26+Context+Engineering;Building+Infrastructure+for+AI+Agents&font=Fira+Code&center=true&width=520&height=45&color=36BCF7&vCenter=true&pause=1000&size=18" alt="Typing SVG" />
+  </a>
+</p>
+
 # < JorgeCura />
 
 ```csharp
@@ -92,6 +98,12 @@ steps: [Pour 200g, Wait 2:00, Swirl, Press at 2:30 — stop at the hiss]
   <br />
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=curajorge&layout=compact&theme=tokyonight&hide_border=true" alt="Top Languages" width="495" />
 </p>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/curajorge/curajorge/output/github-snake-dark.svg" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/curajorge/curajorge/output/github-snake.svg" />
+  <img alt="github-snake" src="https://raw.githubusercontent.com/curajorge/curajorge/output/github-snake-dark.svg" width="100%" />
+</picture>
 
 ---
 
