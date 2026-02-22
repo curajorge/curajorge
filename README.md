@@ -7,14 +7,14 @@ public class Engineer : IPolyglot, IArchitect, IAgentBuilder
     public string Name => "Jorge Cura";
     public string Philosophy => "Language Agnostic (The right tool for the job)";
     public string Obsession => "Deterministic Systems & Context Engineering";
-    public string CurrentFocus => "AI Agent Orchestration & Developer Tooling";
+    public string CurrentFocus => "Distributed Systems, AI Agent Orchestration & Developer Tooling";
     public bool IsCoffeeDependent => true;
 }
 ```
 
 ### `> whoami`
 
-Senior engineer with 7+ years building systems that other engineers depend on. I've shipped high-volume payment infrastructure processing $50M+ annually, led production migrations without downtime, and recently focused on developer tooling and AI-assisted workflows.
+Senior engineer with 7+ years building distributed systems that other engineers depend on. I've shipped high-volume payment infrastructure processing $50M+ annually, led production migrations without downtime, and recently focused on developer tooling and AI-assisted workflows.
 
 I am **language agnostic** by design. Whether it's **Rust** for local-first performance, **Python** for agent orchestration, or **C#** for enterprise stability, I focus on building **idempotent, fault-tolerant systems** regardless of the stack.
 
